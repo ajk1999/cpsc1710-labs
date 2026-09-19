@@ -33,3 +33,4 @@ Materials are by [Xiuye Chen](https://github.com/xiuyechen), developed with Code
 - I found the graph cluttered, so I asked to show only the selected food and its three nearest neighbors, remove the dataset buttons, and make the prediction section full width.
 - I pointed out that the picker only offered training examples. I asked for different foods, including unlikely soups or salads, and a message rejecting training-set entries.
 - I asked for more foods that unexpectedly predict Soup, then requested alphabetical ordering in the dropdown.
+- I asked to pretty up the page with soup and salad line drawings, a matching verdict illustration, and a playful subtitle with sparkles around “believe.”
