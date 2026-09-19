@@ -26,3 +26,10 @@ Then visit `http://localhost:8000/`.
 Materials are by [Xiuye Chen](https://github.com/xiuyechen), developed with Codex, and shared under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
 ## development log
+
+- I asked for a first version with two sliders—Spoon Necessity and Container Dependence—to classify foods as Soup or Salad.
+- I replaced the fixed rule with eight labeled examples and asked for a three-nearest-neighbor vote, showing the selected examples and their distances.
+- I asked for an autocomplete food picker that fills in preset slider values.
+- I found the graph cluttered, so I asked to show only the selected food and its three nearest neighbors, remove the dataset buttons, and make the prediction section full width.
+- I pointed out that the picker only offered training examples. I asked for different foods, including unlikely soups or salads, and a message rejecting training-set entries.
+- I asked for more foods that unexpectedly predict Soup, then requested alphabetical ordering in the dropdown.
