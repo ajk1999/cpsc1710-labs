@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Soup or Salad?</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; color: #23382e; background: #f5f5ef; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 32px 18px; }
+    main { max-width: 860px; margin: auto; }
+    .eyebrow { color: #607266; font-size: .75rem; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; }
+    h1 { font-size: clamp(2.3rem, 6vw, 3.5rem); letter-spacing: -.05em; margin: 8px 0; }
+    p { line-height: 1.6; }
+    header > p:last-child { color: #607266; margin-bottom: 28px; }
+    .believe { white-space: nowrap; color: #965720; font-style: italic; }
+    .sparkle { display: inline-block; color: #b77d28; font-size: .8em; vertical-align: .15em; margin: 0 .2em; }
+    .title-row { display: flex; align-items: center; gap: 18px; }
+    .food-doodles { display: flex; align-items: center; gap: 18px; }
+    .food-doodles svg { width: 104px; height: 94px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+    .soup-doodle { color: #965720; transform: rotate(-7deg); }
+    .salad-doodle { color: #357455; transform: rotate(6deg); }
+    .verdict-row { display: flex; align-items: center; gap: 16px; }
+    .verdict-art svg { width: 76px; height: 68px; }
+    .verdict-art .soup-doodle, .verdict-art .salad-doodle { display: none; }
+    .result[data-label="Soup"] .verdict-art .soup-doodle,
+    .result[data-label="Salad"] .verdict-art .salad-doodle { display: block; }
+    @media (max-width: 650px) { .food-doodles { gap: 12px; } .food-doodles svg { width: 76px; height: 68px; } }
+    .layout { display: grid; grid-template-columns: 1fr 1.1fr; gap: 24px; }
+    .card { background: white; border: 1px solid #dbe1d8; border-radius: 20px; padding: 24px; }
+    .control + .control { margin-top: 30px; }
+    .food-picker { margin-bottom: 26px; padding-bottom: 18px; border-bottom: 1px solid #dbe1d8; }
+    .food-picker input { font: inherit; color: inherit; background: white; border: 1px solid #cdd7cb; border-radius: 10px; padding: 12px; margin-top: 10px; cursor: text; }
+    .food-picker p { margin: 4px 0; }
+    .food-picker input[aria-invalid="true"] { border-color: #965720; }
+    #foodStatus[data-error="true"] { color: #965720; font-weight: 650; }
+    label { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-weight: 650; }
+    output { background: #edf2e8; border-radius: 8px; padding: 4px 10px; font-variant-numeric: tabular-nums; }
+    input { width: 100%; margin: 18px 0 8px; accent-color: #357455; cursor: pointer; }
+    input:focus-visible, button:focus-visible { outline: 3px solid #357455; outline-offset: 5px; }
+    .ends { display: flex; justify-content: space-between; font-size: .75rem; color: #607266; }
+    .result { grid-column: 1 / -1; padding: 24px; border-radius: 14px; background: #edf5e8; }
+    .result[data-label="Soup"] { background: #fff0df; }
+    .result p { margin: 8px 0 0; font-size: .9rem; }
+    .result h2 { margin: 4px 0; font-size: 2.4rem; letter-spacing: -.04em; }
+    .small { font-size: .8rem; color: #607266; }
+    h3 { margin: 0 0 8px; font-size: 1rem; }
+    svg { display: block; width: 100%; height: auto; overflow: visible; }
+    svg text { font-family: system-ui, sans-serif; fill: #23382e; font-size: 11px; }
+    .neighbors { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; list-style: none; padding: 0; font-size: .85rem; line-height: 1.6; }
+    .neighbors li { margin: 10px 0; }
+    .neighbors span { display: block; color: #607266; }
+    footer { font-size: .8rem; color: #607266; margin-top: 22px; line-height: 1.6; }
+    @media (max-width: 650px) { .layout, .neighbors { grid-template-columns: 1fr; } body { padding: 22px 14px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">A tiny food classifier</p>
+      <h1 class="title-row food-doodles" aria-label="Soup or salad?">
+        <svg class="soup-doodle" viewBox="0 0 110 100" focusable="false" aria-hidden="true">
+            <circle cx="55" cy="52" r="43" fill="#fae8d4" stroke="none"/>
+            <path d="M35 31c-8-8 8-10 0-19M53 28c-8-8 8-10 0-19M70 32c-8-8 8-10 0-19"/>
+            <ellipse cx="53" cy="48" rx="36" ry="10"/>
+            <path d="M17 48c3 25 16 36 36 36s33-11 36-36M37 87h32M28 48c10-5 39-5 50 0M81 42l16-18"/>
+            <path d="M44 64v2M62 64v2M47 72q6 6 12 0"/>
+          </svg>
+        <span aria-hidden="true">or</span>
+        <svg class="salad-doodle" viewBox="0 0 110 100" focusable="false" aria-hidden="true">
+            <circle cx="55" cy="52" r="43" fill="#e5efdc" stroke="none"/>
+            <path d="M28 47C10 34 21 19 38 34c-6-26 17-28 21-6 13-22 31-12 21 8 21-3 23 13 9 19"/>
+            <path d="M37 47 28 33M53 45l-4-24M66 47l10-20"/>
+            <path d="M25 54a10 10 0 0 1 20 0M67 54a10 10 0 0 1 20 0" fill="#f3d9bd"/>
+            <path d="M17 54h76c-4 20-16 30-38 30S21 74 17 54ZM39 87h32" fill="#f5f5ef"/>
+            <path d="M46 65v2M64 65v2M49 73q6 6 12 0"/>
+          </svg>
+        <span aria-hidden="true">?</span>
+      </h1>
+      <p>Everything is either a soup or a salad, as long as you <span class="believe"><span class="sparkle" aria-hidden="true">✧</span>believe<span class="sparkle" aria-hidden="true">✦</span></span>.</p>
+    </header>
+    <div class="layout">
+      <section class="card" aria-label="Food inputs">
+        <div class="food-picker">
+          <label for="foodName">Choose a food</label>
+          <input id="foodName" type="text" list="foodOptions" placeholder="Start typing, e.g. Pizza" autocomplete="off" aria-describedby="foodHelp foodStatus">
+          <datalist id="foodOptions"></datalist>
+          <p class="small" id="foodHelp">These foods are outside the training set. Choose one to load its playful preset scores, or explore with the sliders. There is no “neither” option!</p>
+          <p class="small" id="foodStatus" role="status" aria-live="polite">Using custom slider values.</p>
+        </div>
+        <div class="control">
+          <label for="spoon">Spoon Necessity <output id="spoonValue" for="spoon">6</output></label>
+          <input id="spoon" type="range" min="1" max="10" step="1" value="6">
+          <div class="ends"><span>1 · Optional</span><span>10 · Essential</span></div>
+        </div>
+        <div class="control">
+          <label for="container">Container Dependence <output id="containerValue" for="container">6</output></label>
+          <input id="container" type="range" min="1" max="10" step="1" value="6">
+          <div class="ends"><span>1 · Fine on a plate</span><span>10 · Needs a bowl</span></div>
+        </div>
+
+      </section>
+      <section class="card" aria-labelledby="gridHeading">
+        <h3 id="gridHeading">Where does your food land?</h3>
+        <p class="small">Only the three nearest neighbors are shown. Orange circles = Soup; green squares = Salad. Hover over a neighbor for its name and distance. The dark dot is your food.</p>
+        <svg viewBox="0 0 340 340" role="img" aria-labelledby="plotTitle plotDescription">
+          <title id="plotTitle">Soup and salad decision grid</title>
+          <desc id="plotDescription"></desc>
+          <defs>
+            <pattern id="grid" x="50" y="20" width="28" height="28" patternUnits="userSpaceOnUse">
+              <path d="M 28 0 L 0 0 0 28" fill="none" stroke="#23382e" stroke-opacity=".12"/>
+            </pattern>
+          </defs>
+          <rect x="50" y="20" width="252" height="252" fill="url(#grid)" stroke="#bcc8bc"/>
+          <g id="connections"></g>
+          <g id="examples"></g>
+          <g id="ticks"></g>
+          <text x="176" y="315" text-anchor="middle">Spoon Necessity →</text>
+          <text transform="translate(14 146) rotate(-90)" text-anchor="middle">Container Dependence →</text>
+          <circle id="item" cx="190" cy="132" r="7" fill="#23382e" stroke="white" stroke-width="3"/>
+          <text id="itemLabel" x="190" y="116" text-anchor="middle" style="font-weight:700;paint-order:stroke;stroke:white;stroke-width:3px">You</text>
+        </svg>
+
+      </section>
+        <div class="result" id="result" data-label="Soup" role="status" aria-live="polite" aria-atomic="true">
+          <span class="small">Prediction</span>
+          <div class="verdict-row">
+            <h2 id="prediction">Soup</h2>
+            <div class="food-doodles verdict-art" aria-hidden="true">
+              <svg class="soup-doodle" viewBox="0 0 110 100" focusable="false">
+            <circle cx="55" cy="52" r="43" fill="#fae8d4" stroke="none"/>
+            <path d="M35 31c-8-8 8-10 0-19M53 28c-8-8 8-10 0-19M70 32c-8-8 8-10 0-19"/>
+            <ellipse cx="53" cy="48" rx="36" ry="10"/>
+            <path d="M17 48c3 25 16 36 36 36s33-11 36-36M37 87h32M28 48c10-5 39-5 50 0M81 42l16-18"/>
+            <path d="M44 64v2M62 64v2M47 72q6 6 12 0"/>
+          </svg>
+              <svg class="salad-doodle" viewBox="0 0 110 100" focusable="false">
+            <circle cx="55" cy="52" r="43" fill="#e5efdc" stroke="none"/>
+            <path d="M28 47C10 34 21 19 38 34c-6-26 17-28 21-6 13-22 31-12 21 8 21-3 23 13 9 19"/>
+            <path d="M37 47 28 33M53 45l-4-24M66 47l10-20"/>
+            <path d="M25 54a10 10 0 0 1 20 0M67 54a10 10 0 0 1 20 0" fill="#f3d9bd"/>
+            <path d="M17 54h76c-4 20-16 30-38 30S21 74 17 54ZM39 87h32" fill="#f5f5ef"/>
+            <path d="M46 65v2M64 65v2M49 73q6 6 12 0"/>
+          </svg>
+            </div>
+          </div>
+          <p id="explanation"></p>
+          <p class="small" id="score"></p>
+          <h3 style="margin-top:18px">The 3 closest examples</h3>
+          <ol class="neighbors" id="neighbors"></ol>
+        </div>
+    </div>
+    <footer>3-nearest neighbors: measure straight-line distance using both sliders equally, then take the majority label among the three closest examples.
+      Distance = √((spoon difference)² + (container difference)²). Distances shown are rounded to two decimals; selection uses full precision.
+      Equal distances are resolved using a fixed dataset order. Food presets supply only slider values, not labels, and are never added to the training set.
+      The model always chooses Soup or Salad—even when neither describes the food well.</footer>
+  </main>
+  <script>
+    const spoon = document.getElementById('spoon');
+    const container = document.getElementById('container');
+    const get = id => document.getElementById(id);
+    let selectedFood = null;
+    const x = value => 50 + (value - 1) * 28;
+    const y = value => 272 - (value - 1) * 28;
+    for (let value = 1; value <= 10; value++) {
+      for (const [tx, ty, anchor] of [[x(value), 290, 'middle'], [40, y(value) + 4, 'end']]) {
+        const tick = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tick.setAttribute('x', tx);
+        tick.setAttribute('y', ty);
+        tick.setAttribute('text-anchor', anchor);
+        tick.textContent = value;
+        get('ticks').appendChild(tick);
+      }
+    }
+    const examples = [
+      { name: 'Chili', spoon: 9, container: 8, label: 'Soup' },
+      { name: 'Garden salad', spoon: 1, container: 2, label: 'Salad' },
+      { name: 'Pho', spoon: 7, container: 9, label: 'Soup' },
+      { name: 'Poke bowl', spoon: 2, container: 8, label: 'Salad' },
+      { name: 'Gazpacho', spoon: 4, container: 7, label: 'Soup' },
+      { name: 'Tabbouleh', spoon: 4, container: 4, label: 'Salad' },
+      { name: 'Cereal with milk', spoon: 8, container: 8, label: 'Soup' },
+      { name: 'Bibimbap', spoon: 5, container: 6, label: 'Salad' }
+    ];
+    // Unlabeled foods for trying the classifier; separate from its training examples.
+    const foodPresets = [
+      { name: 'Pizza', spoon: 1, container: 1 },
+      { name: 'Ice cream', spoon: 8, container: 7 },
+      { name: 'Burger', spoon: 1, container: 2 },
+      { name: 'Spaghetti', spoon: 3, container: 6 },
+      { name: 'Peanut butter', spoon: 6, container: 8 },
+      { name: 'Mashed potatoes', spoon: 6, container: 5 },
+      { name: 'Popcorn', spoon: 1, container: 7 },
+      { name: 'Pancakes', spoon: 2, container: 3 },
+      { name: 'Yogurt', spoon: 9, container: 9 },
+      { name: 'Sushi', spoon: 1, container: 3 },
+      { name: 'Chocolate cake', spoon: 3, container: 3 },
+      { name: 'Smoothie', spoon: 3, container: 10 },
+      { name: 'French fries', spoon: 1, container: 4 },
+      { name: 'Oatmeal', spoon: 9, container: 8 },
+      { name: 'Steak', spoon: 1, container: 2 },
+      { name: 'Pudding', spoon: 9, container: 7 },
+      { name: 'Cookie dough', spoon: 7, container: 7 },
+      { name: 'Chocolate mousse', spoon: 9, container: 8 },
+      { name: 'Applesauce', spoon: 8, container: 9 },
+      { name: 'Risotto', spoon: 7, container: 7 },
+      { name: 'Mac and cheese', spoon: 7, container: 6 },
+      { name: 'Tiramisu in a cup', spoon: 8, container: 8 }
+    ];
+    function svgElement(tag, attributes, parent, text) {
+      const element = document.createElementNS('http://www.w3.org/2000/svg', tag);
+      Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+      if (text !== undefined) element.textContent = text;
+      parent.appendChild(element);
+      return element;
+    }
+    [...foodPresets].sort((a, b) => a.name.localeCompare(b.name, 'en')).forEach(example => {
+      const option = document.createElement('option');
+      option.value = example.name;
+      get('foodOptions').appendChild(option);
+
+    });
+    function classify(s, c) {
+      const neighbors = examples.map((example, index) => ({
+        ...example, index, distance: Math.hypot(s - example.spoon, c - example.container)
+      })).sort((a, b) => a.distance - b.distance || a.index - b.index).slice(0, 3);
+      const soupVotes = neighbors.filter(example => example.label === 'Soup').length;
+      return { neighbors, soupVotes, label: soupVotes >= 2 ? 'Soup' : 'Salad' };
+    }
+    function update() {
+      const s = Number(spoon.value), c = Number(container.value);
+      const { neighbors, soupVotes, label } = classify(s, c);
+      get('spoonValue').textContent = s;
+      get('containerValue').textContent = c;
+      get('prediction').textContent = label;
+      get('result').dataset.label = label;
+      get('explanation').textContent = `${label === 'Soup' ? soupVotes : 3 - soupVotes} of the 3 closest examples are labeled ${label}, so their majority vote predicts ${label}.`;
+      get('score').textContent = `Soup: ${soupVotes} votes · Salad: ${3 - soupVotes} votes`;
+      get('neighbors').replaceChildren();
+      neighbors.forEach(example => {
+        const row = document.createElement('li');
+        const name = document.createElement('strong');
+        name.textContent = `${example.name} · ${example.label}`;
+        const detail = document.createElement('span');
+        detail.textContent = `(${example.spoon}, ${example.container}) · Distance ${example.distance.toFixed(2)}`;
+        row.appendChild(name);
+        row.appendChild(detail);
+        get('neighbors').appendChild(row);
+      });
+      get('connections').replaceChildren();
+      get('examples').replaceChildren();
+      neighbors.forEach(example => {
+        svgElement('line', { x1: x(s), y1: y(c), x2: x(example.spoon), y2: y(example.container), stroke: '#607266', 'stroke-width': 2, 'stroke-dasharray': '4 3' }, get('connections'));
+      });
+      neighbors.forEach(example => {
+        const cx = x(example.spoon), cy = y(example.container);
+        const detail = `${example.name} (${example.spoon}, ${example.container}) · ${example.label} · Distance ${example.distance.toFixed(2)}`;
+        // A hollow marker remains visible when the current food is an exact match.
+        const shape = example.label === 'Soup'
+          ? svgElement('circle', { cx, cy, r: 11, fill: 'white', stroke: '#965720', 'stroke-width': 3 }, get('examples'))
+          : svgElement('rect', { x: cx - 10, y: cy - 10, width: 20, height: 20, fill: 'white', stroke: '#357455', 'stroke-width': 3 }, get('examples'));
+        svgElement('title', {}, shape, detail);
+      });
+      get('itemLabel').textContent = selectedFood || 'You';
+      get('itemLabel').setAttribute('text-anchor', s >= 7 ? 'end' : s <= 3 ? 'start' : 'middle');
+      get('item').setAttribute('cx', x(s));
+      get('item').setAttribute('cy', y(c));
+      get('itemLabel').setAttribute('x', x(s));
+      get('itemLabel').setAttribute('y', y(c) + 24);
+      get('plotDescription').textContent = `${selectedFood || 'Your item'}: Spoon Necessity ${s}, Container Dependence ${c}. Prediction: ${label}. Closest examples: ${neighbors.map(example => `${example.name}, ${example.label}, distance ${example.distance.toFixed(2)}`).join('; ')}.`;
+    }
+    function selectFood(example) {
+      selectedFood = example.name;
+      get('foodName').value = example.name;
+      spoon.value = example.spoon;
+      container.value = example.container;
+      get('foodStatus').textContent = `${example.name}: Spoon Necessity ${example.spoon}, Container Dependence ${example.container}. Prediction comes from the three-neighbor vote.`;
+      update();
+    }
+    function lookupFood() {
+      const query = get('foodName').value.trim().replace(/\s+/g, ' ').toLowerCase();
+      const trainingMatch = examples.find(example => example.name.toLowerCase() === query);
+      get('foodName').setAttribute('aria-invalid', trainingMatch ? 'true' : 'false');
+      get('foodStatus').dataset.error = trainingMatch ? 'true' : 'false';
+      if (trainingMatch) {
+        selectedFood = null;
+        get('foodStatus').textContent = `${trainingMatch.name} is already in the training set. Please pick a different food, such as Pizza or Ice cream, to try a new example. The graph and prediction still use the current slider values.`;
+        update();
+        return;
+      }
+      const match = foodPresets.find(example => example.name.toLowerCase() === query);
+      if (match) selectFood(match);
+      else {
+        selectedFood = null;
+        get('foodStatus').textContent = query
+        ? 'Choose a suggested food for preset values. The current prediction still uses the sliders.'
+        : 'Using custom slider values.';
+        update();
+      }
+    }
+    get('foodName').addEventListener('input', lookupFood);
+    get('foodName').addEventListener('change', lookupFood);
+    function useCustomValues() {
+      selectedFood = null;
+      get('foodName').setAttribute('aria-invalid', 'false');
+      get('foodStatus').dataset.error = 'false';
+      get('foodName').value = '';
+      get('foodStatus').textContent = 'Using custom slider values.';
+      update();
+    }
+    spoon.addEventListener('input', useCustomValues);
+    container.addEventListener('input', useCustomValues);
+    update();
+  </script>
+</body>
+</html>
