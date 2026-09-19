@@ -1,0 +1,87 @@
+- generic [active] [ref=e1]:
+  - switch "Original draft" [ref=e3] [cursor=pointer]
+  - main [ref=e5]:
+    - generic [ref=e6]:
+      - paragraph [ref=e7]: A tiny food classifier
+      - heading "Soup or salad?" [level=1] [ref=e8]:
+        - generic [aria-hidden] [ref=e15]: or
+        - generic [aria-hidden] [ref=e23]: "?"
+      - paragraph [ref=e24]:
+        - text: Everything is either a soup or a salad, as long as you
+        - generic [ref=e25]:
+          - generic [aria-hidden] [ref=e26]: ✧
+          - text: believe
+          - generic [aria-hidden] [ref=e27]: ✦
+        - text: .
+    - generic [ref=e28]:
+      - region "Food inputs" [ref=e29]:
+        - generic [ref=e30]:
+          - generic [ref=e31]: Choose a food
+          - combobox "Choose a food" [ref=e32]
+          - paragraph [ref=e33]: These foods are outside the training set. Choose one to load its playful preset scores, or explore with the sliders. There is no “neither” option!
+          - status [ref=e34]: Using custom slider values.
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - text: Spoon Necessity
+            - status [ref=e37]: "6"
+          - slider "Spoon Necessity" [ref=e38] [cursor=pointer]: "6"
+          - generic [ref=e39]:
+            - generic [ref=e40]: 1 · Optional
+            - generic [ref=e41]: 10 · Essential
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - text: Container Dependence
+            - status [ref=e44]: "6"
+          - slider "Container Dependence" [ref=e45] [cursor=pointer]: "6"
+          - generic [ref=e46]:
+            - generic [ref=e47]: 1 · Fine on a plate
+            - generic [ref=e48]: 10 · Needs a bowl
+      - region [ref=e49]:
+        - heading "Where does your food land?" [level=3] [ref=e50]
+        - paragraph [ref=e51]: Only the three nearest neighbors are shown. Orange circles = Soup; green squares = Salad. Hover over a neighbor for its name and distance. The dark dot is your food.
+        - 'img "Soup and salad decision grid Your item: Spoon Necessity 6, Container Dependence 6. Prediction: Salad. Closest examples: Bibimbap, Salad, distance 1.00; Gazpacho, Soup, distance 2.24; Tabbouleh, Salad, distance 2.83." [ref=e52]':
+          - generic [ref=e57]:
+            - generic "Bibimbap (5, 6) · Salad · Distance 1.00" [ref=e58]
+            - generic "Gazpacho (4, 7) · Soup · Distance 2.24" [ref=e59]
+            - generic "Tabbouleh (4, 4) · Salad · Distance 2.83" [ref=e60]
+          - generic [ref=e61]:
+            - generic [ref=e62]: "1"
+            - generic [ref=e63]: "1"
+            - generic [ref=e64]: "2"
+            - generic [ref=e65]: "2"
+            - generic [ref=e66]: "3"
+            - generic [ref=e67]: "3"
+            - generic [ref=e68]: "4"
+            - generic [ref=e69]: "4"
+            - generic [ref=e70]: "5"
+            - generic [ref=e71]: "5"
+            - generic [ref=e72]: "6"
+            - generic [ref=e73]: "6"
+            - generic [ref=e74]: "7"
+            - generic [ref=e75]: "7"
+            - generic [ref=e76]: "8"
+            - generic [ref=e77]: "8"
+            - generic [ref=e78]: "9"
+            - generic [ref=e79]: "9"
+            - generic [ref=e80]: "10"
+            - generic [ref=e81]: "10"
+          - generic [ref=e82]: Spoon Necessity →
+          - generic [ref=e83]: Container Dependence →
+          - generic [ref=e85]: You
+      - status [ref=e86]:
+        - text: Prediction
+        - heading "Salad" [level=2] [ref=e88]
+        - paragraph [ref=e97]: 2 of the 3 closest examples are labeled Salad, so their majority vote predicts Salad.
+        - paragraph [ref=e98]: "Soup: 1 votes · Salad: 2 votes"
+        - heading "The 3 closest examples" [level=3] [ref=e99]
+        - list [ref=e100]:
+          - listitem [ref=e101]:
+            - strong [ref=e102]: Bibimbap · Salad
+            - generic [ref=e103]: (5, 6) · Distance 1.00
+          - listitem [ref=e104]:
+            - strong [ref=e105]: Gazpacho · Soup
+            - generic [ref=e106]: (4, 7) · Distance 2.24
+          - listitem [ref=e107]:
+            - strong [ref=e108]: Tabbouleh · Salad
+            - generic [ref=e109]: (4, 4) · Distance 2.83
+    - generic [ref=e110]: "3-nearest neighbors: measure straight-line distance using both sliders equally, then take the majority label among the three closest examples. Distance = √((spoon difference)² + (container difference)²). Distances shown are rounded to two decimals; selection uses full precision. Equal distances are resolved using a fixed dataset order. Food presets supply only slider values, not labels, and are never added to the training set. The model always chooses Soup or Salad—even when neither describes the food well."

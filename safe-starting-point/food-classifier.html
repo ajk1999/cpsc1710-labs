@@ -39,8 +39,12 @@
     .layout { display: grid; grid-template-columns: 1fr 1.1fr; gap: 24px; }
     .card { background: white; border: 1px solid #dbe1d8; border-radius: 20px; padding: 24px; }
     .control + .control { margin-top: 30px; }
-    .food-picker { margin-bottom: 26px; padding-bottom: 18px; border-bottom: 1px solid #dbe1d8; }
+    .food-picker { position: relative; margin-bottom: 26px; padding-bottom: 18px; border-bottom: 1px solid #dbe1d8; }
     .food-picker input { font: inherit; color: inherit; background: white; border: 1px solid #cdd7cb; border-radius: 10px; padding: 12px; margin-top: 10px; cursor: text; }
+    .food-options { position: absolute; top: 83px; left: 0; right: 0; z-index: 10; max-height: 240px; overflow-y: auto; margin: 0; padding: 6px; list-style: none; background: white; border: 1px solid #cdd7cb; border-radius: 10px; box-shadow: 0 8px 24px #23382e22; }
+    .food-options [role="option"] { padding: 10px; border-radius: 6px; cursor: pointer; }
+    .food-options [role="option"]:hover, .food-options [aria-selected="true"] { background: #edf2e8; }
+    .food-options .no-match { padding: 10px; color: #607266; font-size: .85rem; }
     .food-picker p { margin: 4px 0; }
     .food-picker input[aria-invalid="true"] { border-color: #965720; }
     #foodStatus[data-error="true"] { color: #965720; font-weight: 650; }
@@ -102,8 +106,8 @@
       <section class="card" aria-label="Food inputs">
         <div class="food-picker">
           <label for="foodName">Choose a food</label>
-          <input id="foodName" type="text" list="foodOptions" placeholder="Drop me down :)" autocomplete="off" aria-describedby="foodHelp foodStatus">
-          <datalist id="foodOptions"></datalist>
+          <input id="foodName" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="foodOptions" placeholder="Drop me down :)" autocomplete="off" aria-describedby="foodHelp foodStatus">
+          <ul id="foodOptions" class="food-options" role="listbox" aria-label="Food suggestions" hidden></ul>
           <p class="small" id="foodHelp">These foods are outside the training set. Choose one to load its playful preset scores, or explore with the sliders. There is no “neither” option!</p>
           <p class="small" id="foodStatus" role="status" aria-live="polite">Using custom slider values.</p>
         </div>
@@ -233,12 +237,38 @@
       parent.appendChild(element);
       return element;
     }
-    [...foodPresets].sort((a, b) => a.name.localeCompare(b.name, 'en')).forEach(example => {
-      const option = document.createElement('option');
-      option.value = example.name;
-      get('foodOptions').appendChild(option);
-
-    });
+    const sortedFoods = [...foodPresets].sort((a, b) => a.name.localeCompare(b.name, 'en'));
+    let visibleFoods = [], activeFood = -1;
+    function closeFoodOptions() {
+      get('foodOptions').hidden = true;
+      get('foodName').setAttribute('aria-expanded', 'false');
+      get('foodName').removeAttribute('aria-activedescendant');
+      activeFood = -1;
+    }
+    function showFoodOptions(query = '') {
+      visibleFoods = sortedFoods.filter(food => food.name.toLowerCase().includes(query.trim().toLowerCase()));
+      activeFood = -1;
+      get('foodName').removeAttribute('aria-activedescendant');
+      get('foodOptions').replaceChildren();
+      visibleFoods.forEach((food, index) => {
+        const option = document.createElement('li');
+        option.id = `food-option-${index}`;
+        option.setAttribute('role', 'option');
+        option.setAttribute('aria-selected', 'false');
+        option.textContent = food.name;
+        option.addEventListener('mousedown', event => event.preventDefault());
+        option.addEventListener('click', () => { selectFood(food); closeFoodOptions(); });
+        get('foodOptions').appendChild(option);
+      });
+      if (!visibleFoods.length) {
+        const empty = document.createElement('li');
+        empty.className = 'no-match';
+        empty.textContent = 'No preset matches. Click the box to see all foods.';
+        get('foodOptions').appendChild(empty);
+      }
+      get('foodOptions').hidden = false;
+      get('foodName').setAttribute('aria-expanded', 'true');
+    }
     function classify(s, c) {
       const neighbors = examples.map((example, index) => ({
         ...example, index, distance: Math.hypot(s - example.spoon, c - example.container)
@@ -289,6 +319,8 @@
       get('plotDescription').textContent = `${selectedFood || 'Your item'}: Spoon Necessity ${s}, Container Dependence ${c}. Prediction: ${label}. Closest examples: ${neighbors.map(example => `${example.name}, ${example.label}, distance ${example.distance.toFixed(2)}`).join('; ')}.`;
     }
     function selectFood(example) {
+      get('foodName').setAttribute('aria-invalid', 'false');
+      get('foodStatus').dataset.error = 'false';
       selectedFood = example.name;
       get('foodName').value = example.name;
       spoon.value = example.spoon;
@@ -317,8 +349,38 @@
         update();
       }
     }
-    get('foodName').addEventListener('input', lookupFood);
-    get('foodName').addEventListener('change', lookupFood);
+    get('foodName').addEventListener('focus', () => showFoodOptions());
+    get('foodName').addEventListener('click', () => {
+      showFoodOptions();
+      get('foodName').select();
+    });
+    get('foodName').addEventListener('input', () => {
+      lookupFood();
+      showFoodOptions(get('foodName').value);
+    });
+    get('foodName').addEventListener('blur', closeFoodOptions);
+    get('foodName').addEventListener('keydown', event => {
+      if (event.key === 'Escape') { closeFoodOptions(); return; }
+      if (event.key === 'Enter' && !get('foodOptions').hidden && activeFood >= 0) {
+        event.preventDefault();
+        selectFood(visibleFoods[activeFood]);
+        closeFoodOptions();
+        return;
+      }
+      if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+      event.preventDefault();
+      if (get('foodOptions').hidden) showFoodOptions();
+      if (!visibleFoods.length) return;
+      activeFood = activeFood < 0
+        ? (event.key === 'ArrowDown' ? 0 : visibleFoods.length - 1)
+        : (activeFood + (event.key === 'ArrowDown' ? 1 : -1) + visibleFoods.length) % visibleFoods.length;
+      Array.from(get('foodOptions').children).forEach((option, index) => {
+        option.setAttribute('aria-selected', String(index === activeFood));
+      });
+      const active = get('foodOptions').children[activeFood];
+      get('foodName').setAttribute('aria-activedescendant', active.id);
+      active.scrollIntoView({ block: 'nearest' });
+    });
     function useCustomValues() {
       selectedFood = null;
       get('foodName').setAttribute('aria-invalid', 'false');
