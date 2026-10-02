@@ -1,0 +1,33 @@
+WHAT THE CODE DOES
+
+This program teaches a small neural network to write text one character at a time based on a window of 40 characters.
+
+1. Training data: ten short sentences of the form "I like ___." (cats, dogs, noodles, tacos, books, robots, music, puzzles, pizza, coding), which we joined into one long string.
+2. Characters to numbers: we list every distinct character in that text and give each one a number. It keeps a reverse table to turn numbers back into characters.
+3. validation questions: we slide a window of 40 characters along the text. Each window is a question and the character right after it is the answer This gives a few hundred question/answer pairs.
+4. The model: three layers in a row.
+   - Embedding turns each character number into a list of 32 learned numbers.
+   - LSTM reads the 40 characters in order and keeps a 128-number memory of what has seen.
+   - Dense turns that memory into one score for every possible next character.
+5. Training: the model guesses the next character for each question, measures loss, and adjusts weights accordingly. It goes through all the questions 20 times, 64 at a time. The final loss is printed.
+6. Temperature sampling: the model's scores are turned into probabilities, then one character is picked at random, weighted by those probabilities. Temperature controls how bold the pick is. Low temperature almost always picks the top choice (safe, repetitive). High temperature gives unlikely characters a real chance (creative, but more mistakes).
+7. Generating text: starting from a seed ("I like "), the model predicts a character, adds it to the text, slides the 40-character window forward by one, and repeats. Each new character depends on the ones before it, including its own earlier output.
+   - Seed padding: a seed shorter than 40 characters is left-padded with spaces to exactly 40 characters (33 spaces + "I like "). Characters not in the vocabulary map to id 0.
+   - The returned string STARTS WITH THE PADDED SEED, not the raw seed, so the first printed line of each generation begins with 33 spaces before "I like ". Do not strip or trim them. After the seed, 180 new characters are appended (the text is not trimmed to whole sentences, so it ends mid-sentence).
+8. Reproducibility: a fixed random seed (1710) makes everyone's first run match. Changing it or setting it to None changes the results. To get identical output, set it in this exact order: seed TensorFlow/Keras with tf.keras.utils.set_random_seed(1710) first, then create a separate NumPy generator np.random.default_rng(1710) used only for picking characters (rng.choice over the probabilities). Build the model after seeding, in the order Embedding, LSTM, Dense, and draw exactly one rng.choice per generated character, with no other use of that generator, so the random stream lines up. Also, one character is predicted per model call (batch of one), and the sampling probabilities come from tf.nn.softmax(logits / temperature) in float32.
+9. Exact hyperparameters: Adam optimizer with learning rate 0.01, SparseCategoricalCrossentropy(from_logits=True), windows from range(0, len(text) - 40) with step 1, int32 arrays, a temperature <= 0 means greedy argmax.
+
+WHAT THE DEMO DOES
+
+1. Prints the corpus length, the list of distinct characters, and the number of training samples.
+2. Trains quietly for 20 epochs then prints the final loss.
+3. For each of four temperatures (0.1, 0.5, 0.7, 1.0) it prints:
+   - a header like "=== Temperature 0.1 ===",
+   - the five most likely first characters after "I like ", each with its probability
+   - 180 generated characters appended to the 40-character padded seed (see step 7), so the first line is indented by 33 spaces.
+   Print formats: "Corpus length: N", "Vocab: [list]", "Num training samples: N", "Final loss: X", a blank line then "=== Temperature T ===", then "Top probabilities for the first generated character:", then lines like "  'o': 99.8%" (repr of the character, one decimal percent, two-space indent).
+4. What the generated text looks like:
+   - Low temperature (0.1): neat and repetitive, mostly real sentences from the training data, like "I like pizza."
+   - Medium temperature (0.5 to 0.7): a mix of real sentences and occasional typos, such as "I like bobots." or "I like boding."
+   - High temperature (1.0): the most mistakes and made-up words, like "puzzlzs" or "pauzlcs".
+5. The point of the demo: the same trained model produces more predictable or more surprising text depending only on the temperature setting.
