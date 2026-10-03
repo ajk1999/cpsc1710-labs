@@ -13,7 +13,25 @@ def tokenize(text):
     return text.split()
 
 
+def build_vocab(tokens):
+    # Start with an empty vocabulary
+    stoi = {}  # token -> number
+    itos = {}  # number -> token
+    for token in tokens:
+        if token not in stoi:
+            # Give the token the next unused positional number
+            index = len(stoi)
+            stoi[token] = index
+            itos[index] = token
+    return stoi, itos
+
+
 if __name__ == "__main__":
     text = (Path(__file__).parent / "synthpara_tokenizer_test.txt").read_text(encoding="utf-8")
     tokens = tokenize(text)
     print(tokens)
+
+    stoi, itos = build_vocab(tokens)
+    print("Vocab size:", len(stoi))
+    print(stoi)
+    print(itos)
