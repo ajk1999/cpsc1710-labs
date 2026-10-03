@@ -26,6 +26,16 @@ def build_vocab(tokens):
     return stoi, itos
 
 
+def encode(tokens, stoi):
+    # Look up each token's number in the vocabulary and collect them in a new list
+    return [stoi[token] for token in tokens]
+
+
+def decode(indices, itos):
+    # Look up which token each number belongs to and collect them in a new list
+    return [itos[index] for index in indices]
+
+
 if __name__ == "__main__":
     text = (Path(__file__).parent / "synthpara_tokenizer_test.txt").read_text(encoding="utf-8")
     tokens = tokenize(text)
@@ -35,3 +45,9 @@ if __name__ == "__main__":
     print("Vocab size:", len(stoi))
     print(stoi)
     print(itos)
+
+    indices = encode(tokens, stoi)
+    print(indices)
+
+    decoded_tokens = decode(indices, itos)
+    print(decoded_tokens)
