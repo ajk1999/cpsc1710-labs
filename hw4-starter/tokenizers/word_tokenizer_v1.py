@@ -59,3 +59,8 @@ if __name__ == "__main__":
 
     sentence = detokenize(decoded_tokens)
     print(sentence)
+
+    # Final step: report length of the text after tokenization (post step 5)
+    print("Original length (characters):", len(text))
+    print("Final length (characters):", len(sentence))
+    print("Final length (tokens):", len(sentence.split()))
