@@ -36,6 +36,11 @@ def decode(indices, itos):
     return [itos[index] for index in indices]
 
 
+def detokenize(decoded_tokens):
+    # Put a space between each token to produce the final sentence
+    return " ".join(decoded_tokens)
+
+
 if __name__ == "__main__":
     text = (Path(__file__).parent / "synthpara_tokenizer_test.txt").read_text(encoding="utf-8")
     tokens = tokenize(text)
@@ -51,3 +56,6 @@ if __name__ == "__main__":
 
     decoded_tokens = decode(indices, itos)
     print(decoded_tokens)
+
+    sentence = detokenize(decoded_tokens)
+    print(sentence)
