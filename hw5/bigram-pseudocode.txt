@@ -1,0 +1,40 @@
+# Load the training text
+text = [reference to training text].
+
+# Split the text into words
+words = split text into words
+
+# Count how often each word follows each other word
+counts = empty dictionary
+for i from 0 to (number of words)-2:
+    w1 = words[i]
+    w2 = words[i+1]
+    if w1 is not in counts:
+        counts[w1] = empty dictionary
+    if w2 is not in counts[w1]:
+        counts[w1][w2] = 0
+    add 1 to counts[w1][w2]
+
+# Choose the next word at weighted random
+function choose_next(w1):
+    options = counts[w1]
+    total = add up all the counts in options
+    r = random number between 0 and total
+    running = 0
+    for each word in options:
+        running = running + count of that word
+        if r < running:
+            return word
+
+# Generate about 100 words
+current = random word from counts
+output = list containing current
+repeat until output has 100 words:
+    if current is not in counts:
+        current = random word from counts
+    else:
+        current = choose_next(current)
+    add current to the end of output
+
+# Show the result
+print output as one line, words separated by spaces
