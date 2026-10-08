@@ -1,19 +1,19 @@
 # Load the training text
 text = [reference to training text].
 
-# Split the text into words
-words = split text into words
+# Tokenize the text into words
+tokens = split(text by spaces)
 
 # Count how often each word follows each other word
 counts = empty dictionary
-for i from 0 to (number of words)-2:
-    w1 = words[i]
-    w2 = words[i+1]
+for i from 0 to length(tokens)-2:
+    w1 = tokens[i]
+    w2 = tokens[i+1]
     if w1 is not in counts:
         counts[w1] = empty dictionary
     if w2 is not in counts[w1]:
         counts[w1][w2] = 0
-    add 1 to counts[w1][w2]
+    increment count for bigram (w1, w2)
 
 # Choose the next word at weighted random
 function choose_next(w1):
