@@ -17,6 +17,10 @@ for i in range(len(tokens) - 1):
         counts[w1][w2] = 0
     counts[w1][w2] += 1
 
+# Show part of the model
+print("Tokens:", len(tokens), "| Unique words:", len(set(tokens)))
+print("Words that followed", repr(tokens[0]) + ":", counts[tokens[0]])
+
 # Choose the next word at weighted random
 def choose_next(w1):
     options = counts[w1]
