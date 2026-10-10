@@ -1,7 +1,7 @@
 import random
 
 # Load the training text
-text = open("TEXT_FILE_PATH", encoding="utf-8").read()
+text = open("input.txt", encoding="utf-8").read()
 
 # Tokenize the text into words
 tokens = text.split()
