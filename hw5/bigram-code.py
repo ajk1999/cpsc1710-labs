@@ -17,6 +17,11 @@ for i in range(len(tokens) - 1):
         counts[w1][w2] = 0
     counts[w1][w2] += 1
 
+# Edit the model by hand
+counts["the"]["CPSC 1710 Homework 5"] = 500
+counts["to"] = {"CPSC 1710 Homework 5": 1}
+counts["CPSC 1710 Homework 5"] = {"the": 1}
+
 # Show part of the model
 print("Tokens:", len(tokens), "| Unique words:", len(set(tokens)))
 print("Words that followed", repr(tokens[0]) + ":", counts[tokens[0]])
