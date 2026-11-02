@@ -6,7 +6,7 @@ Austin's working repo for CPSC 1710 (Fall 2026). Forked from the course's `labs`
 - `lab-01` … `lab-05`, `index.html`, `docs/`, `assets/`: course-provided material. Don't edit; pull from upstream.
 - `hw4-starter/`: tiny character-level RNN (`tiny_rnn.py`), tokenizers, generated samples.
 - `hw5/`: bigram language model (`bigram-code.py`, `bigram-pseudocode.txt`), `gpt_dev.ipynb`, `input.txt` training text.
-- `hw6/`: course project: **pitch type + location predictor** from Statcast (via `pybaseball`). Raw interview notes in `hw6/project_brainstorming.md` (read it first). Phase: interview done; next is deep research, then proposal. Don't build the full prototype until Austin says "full prototype", but make the proposal concrete enough to execute directly.
+- `hw6/`: course project: **pitch type + location predictor** from Statcast (via `pybaseball`). **Start with `hw6/HANDOVER.md`** (current state, open threads, what's unverified). Raw interview notes in `hw6/project_brainstorming.md`; `hw6/human_notes/` holds Austin's own writing (don't edit). Phase: interview, research (`hw6/research_notes.md`) and proposal (`hw6/proposal.md`) are done; Austin is reviewing. Don't build until Austin says "full prototype"; then start at proposal Phase 0 and follow its phases, repo layout and leakage controls (allowlist, as-of features, truncation-invariance test). Key facts: seasons 2024-2026 (2023 burn-in for features only), regular season only for training, postseason held out; count-conditional baseline is strong, so report log loss/calibration, not just accuracy.
 - `skills/grill-me`: midterm practice skill.
 
 ## Working conventions

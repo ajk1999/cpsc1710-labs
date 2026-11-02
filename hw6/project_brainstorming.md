@@ -54,8 +54,15 @@ Raw interview notes. Appended as we go; not polished. Deep research and the prot
   - Scope creep: lock a minimum viable path first.
 
 ## Status
-Interview done through round 5. Next: Austin asks for deep research, then proposal. Then "full prototype" on request.
+Interview done through round 5; research and proposal done (see the last section). Current state and open threads: see `HANDOVER.md`.
 
 ### Follow-up: postseason
 - Austin curious about postseason. Recommendation: **no separate postseason model** (~15-20k pitches vs ~700k regular season; overfits). Default: train on regular season only, **hold out postseason as a stress test** ("does the model transfer to October?"). Optional later: `is_postseason` flag, compare vs regular-only on the postseason set. Caveat: selection effects (only strong teams/pitchers); control by comparing each pitcher to his own regular-season mix.
 - Awaiting Austin's confirmation of this default.
+
+### Research + proposal done (2026-11-02)
+- Austin confirmed postseason default and asked to proceed with research and proposal.
+- Wrote `research_notes.md` (prior work, Statcast/pybaseball facts, regime changes, leakage pitfalls) and `proposal.md` (problem, data, features, model ladder B0-B3/M1-M3, splits A/B/C, metrics, leakage controls, demo, report, repo layout, phases, risks).
+- Key finding: count-conditional baseline is within ~0.5 pt top-1 of tuned XGBoost in public work; expect small gains; story is predictability variation, calibration, location.
+- Open: deadline/scope, solo vs team, 2023 burn-in OK?, report format, Colab plan.
+- Next: Austin reviews proposal; "full prototype" starts at Phase 0.
