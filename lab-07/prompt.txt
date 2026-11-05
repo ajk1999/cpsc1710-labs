@@ -1,0 +1,21 @@
+Build a small agent in Python that can use tools until it gives an answer or
+runs out of steps. 
+
+First write a short step-by-step outline of how it works,
+with simple pseudocode. Then write new code for it in a
+separate file, so I can test it.
+
+Some guidelines...
+- Each time, the model sees the whole conversation so far
+  and writes back one line. That line is either going to be
+  "TOOL: name | argument" or "ANSWER: ...". If it writes
+  more than one line, only use the first action.
+
+- It has three tools that work on a folder called "desk"
+  with a few small text files in it: list the files, read
+  a file, and count the days until a date.
+
+- When the model asks for a tool, run it and add the
+  result to the conversation, then ask the model again.
+
+- Stop when it answers, or after 8 steps.
