@@ -19,3 +19,7 @@ Some guidelines...
   result to the conversation, then ask the model again.
 
 - Stop when it answers, or after 8 steps.
+
+- It should really call the model, using my OpenRouter key.
+  The key is in the .env file at the top of the repo, so
+  have the code look for it there.

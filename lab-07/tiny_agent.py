@@ -63,10 +63,22 @@ def days_until(date):
 TOOLS = {"list_files": list_files, "read_file": read_file, "days_until": days_until}
 
 
+def load_key():
+    """Find OPENROUTER_API_KEY in a .env file in this folder or any folder above it."""
+    for folder in [pathlib.Path(__file__).resolve().parent, *pathlib.Path(__file__).resolve().parents]:
+        env = folder / ".env"
+        if env.exists():
+            for line in env.read_text().splitlines():
+                name, _, value = line.partition("=")
+                if name.strip() == "OPENROUTER_API_KEY" and value.strip():
+                    return value.strip().strip("\"'")
+    return os.environ.get("OPENROUTER_API_KEY")
+
+
 def call_model(messages):
-    key = os.environ.get("OPENROUTER_API_KEY")
+    key = load_key()
     if not key:
-        raise ValueError("Set OPENROUTER_API_KEY first.")
+        raise ValueError("Put OPENROUTER_API_KEY=sk-or-... in the .env file at the top of the repo.")
     r = requests.post(f"{BASE_URL}/chat/completions",
                       headers={"Authorization": f"Bearer {key}"},
                       json={"model": MODEL, "messages": messages, "max_tokens": 1500},
